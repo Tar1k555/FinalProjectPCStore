@@ -1,13 +1,17 @@
 package com.example.pcstore
 
+import android.app.AlertDialog
+import android.app.DatePickerDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import java.util.Calendar
 
 class ProfileActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -15,48 +19,66 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         val ivBack = findViewById<ImageView>(R.id.ivBack)
-        val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
-
+        val etLastName = findViewById<EditText>(R.id.etLastName)
+        val etFirstName = findViewById<EditText>(R.id.etFirstName)
+        val etMiddleName = findViewById<EditText>(R.id.etMiddleName)
+        val etPhone = findViewById<EditText>(R.id.etPhone)
         val etProfileEmail = findViewById<EditText>(R.id.etProfileEmail)
 
-        val btnMyOrders = findViewById<Button>(R.id.btnMyOrders)
-        val btnFavorites = findViewById<Button>(R.id.btnFavorites)
-        val btnOrderHistory = findViewById<Button>(R.id.btnOrderHistory)
-
+        val tvDob = findViewById<TextView>(R.id.tvDob)
+        val tvGender = findViewById<TextView>(R.id.tvGender)
+        val btnSaveProfile = findViewById<Button>(R.id.btnSaveProfile)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // --- ЛОГІКА ДАНИХ ---
-        // Дістаємо збережений email і автоматично вставляємо в поле
         val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-        val savedEmail = sharedPref.getString("saved_email", "")
-        etProfileEmail.setText(savedEmail)
+        val currentUserEmail = sharedPref.getString("saved_email", "unknown_user") ?: "unknown_user"
+        etProfileEmail.setText(currentUserEmail)
 
+        etLastName.setText(sharedPref.getString("${currentUserEmail}_lastname", ""))
+        etFirstName.setText(sharedPref.getString("${currentUserEmail}_firstname", ""))
+        etMiddleName.setText(sharedPref.getString("${currentUserEmail}_middlename", ""))
+        etPhone.setText(sharedPref.getString("${currentUserEmail}_phone", ""))
+        tvDob.text = sharedPref.getString("${currentUserEmail}_dob", "Дата народження")
+        tvGender.text = sharedPref.getString("${currentUserEmail}_gender", "Стать:")
 
-        // --- ОБРОБКА КЛІКІВ ---
-        ivBack.setOnClickListener {
-            // Кнопка назад просто повертає на попередній екран
-            finish()
+        tvDob.setOnClickListener {
+            val calendar = Calendar.getInstance()
+            val year = calendar.get(Calendar.YEAR)
+            val month = calendar.get(Calendar.MONTH)
+            val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+            DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
+                val dateStr = "$selectedDay/${selectedMonth + 1}/$selectedYear"
+                tvDob.text = dateStr
+            }, year, month, day).show()
         }
 
-        ivCartProfile.setOnClickListener {
-            Toast.makeText(this, "Кошик відкриється тут!", Toast.LENGTH_SHORT).show()
+        tvGender.setOnClickListener {
+            val genders = arrayOf("Чоловіча", "Жіноча", "Не вказувати")
+            AlertDialog.Builder(this)
+                .setTitle("Оберіть стать")
+                .setItems(genders) { _, which ->
+                    tvGender.text = "Стать: ${genders[which]}"
+                }
+                .show()
         }
 
-        btnMyOrders.setOnClickListener {
-            Toast.makeText(this, "Тут будуть мої замовлення", Toast.LENGTH_SHORT).show()
+        btnSaveProfile.setOnClickListener {
+            val editor = sharedPref.edit()
+            editor.putString("${currentUserEmail}_lastname", etLastName.text.toString())
+            editor.putString("${currentUserEmail}_firstname", etFirstName.text.toString())
+            editor.putString("${currentUserEmail}_middlename", etMiddleName.text.toString())
+            editor.putString("${currentUserEmail}_phone", etPhone.text.toString())
+            editor.putString("${currentUserEmail}_dob", tvDob.text.toString())
+            editor.putString("${currentUserEmail}_gender", tvGender.text.toString())
+            editor.apply()
+
+            Toast.makeText(this, "Дані успішно збережено!", Toast.LENGTH_SHORT).show()
         }
 
-        btnFavorites.setOnClickListener {
-            Toast.makeText(this, "Улюблені товари!", Toast.LENGTH_SHORT).show()
-        }
+        ivBack.setOnClickListener { finish() }
 
-        btnOrderHistory.setOnClickListener {
-            Toast.makeText(this, "Тут буде історія", Toast.LENGTH_SHORT).show()
-        }
-
-        // --- НИЖНЯ ПАНЕЛЬ ---
         bottomNav.selectedItemId = R.id.nav_profile
-
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {
@@ -64,14 +86,8 @@ class ProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_profile -> {
-                    // Ми вже тут
-                    true
-                }
-                else -> {
-                    Toast.makeText(this, "В розробці", Toast.LENGTH_SHORT).show()
-                    false
-                }
+                R.id.nav_profile -> true
+                else -> false
             }
         }
     }
