@@ -13,11 +13,11 @@ class MainActivity : AppCompatActivity() {
         val btnLogout = findViewById<Button>(R.id.btnLogout)
 
         btnLogout.setOnClickListener {
-            MockDatabase.currentUser = null
+            // Записуємо в "блокнот", що юзер вийшов
+            val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
+            sharedPref.edit().putBoolean("is_logged_in", false).apply()
 
-            val intent = Intent(this, LoginActivity::class.java)
-            startActivity(intent)
-
+            startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
     }
