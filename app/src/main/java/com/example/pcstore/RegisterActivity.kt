@@ -10,10 +10,8 @@ class RegisterActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Проблемні рядки видалено, залишаємо тільки прив'язку дизайну:
         setContentView(R.layout.activity_register)
 
-        // Знаходимо наші поля вводу та кнопку
         val etEmail = findViewById<EditText>(R.id.etRegEmail)
         val etPassword = findViewById<EditText>(R.id.etRegPassword)
         val etRepeatPassword = findViewById<EditText>(R.id.etRegRepeatPassword)
@@ -34,18 +32,15 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val userExists = MockDatabase.users.any { it.email == email }
-            if (userExists) {
-                Toast.makeText(this, "Користувач з таким Email вже існує!", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            // Відкриваємо  SharedPreferences ("блокнот" з назвою PCStorePrefs)
+            val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
+            val editor = sharedPref.edit()
 
-            val newUser = User(email, password)
-            MockDatabase.users.add(newUser)
-            MockDatabase.currentUser = newUser
+            editor.putString("saved_email", email)
+            editor.putString("saved_password", password)
+            editor.apply()
 
-            Toast.makeText(this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show()
-
+            Toast.makeText(this, "Реєстрація успішна! Дані збережено.", Toast.LENGTH_SHORT).show()
             finish()
         }
     }
