@@ -12,16 +12,10 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-        val isLoggedIn = sharedPref.getBoolean("is_logged_in", false)
-
-        if (isLoggedIn) {
-            startActivity(Intent(this, MainActivity::class.java))
-            finish()
-            return
-        }
-
+        // Одразу малюємо екран логіну, ніяких перевірок на автопропуск!
         setContentView(R.layout.activity_login)
+
+        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -41,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
             val savedPassword = sharedPref.getString("saved_password", "")
 
             if (email == savedEmail && password == savedPassword) {
+                // Зберігаємо статус, що ми залогінені (хоча зараз ми його не використовуємо для автопропуску, хай буде)
                 sharedPref.edit().putBoolean("is_logged_in", true).apply()
 
                 Toast.makeText(this, "Вхід успішний!", Toast.LENGTH_SHORT).show()
