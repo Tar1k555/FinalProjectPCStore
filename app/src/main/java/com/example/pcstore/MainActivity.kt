@@ -52,12 +52,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_profile -> {
-                    // ТИМЧАСОВО: Робимо тут функцію ВИХОДУ для зручного тестування
-                    val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-                    sharedPref.edit().putBoolean("is_logged_in", false).apply()
-
-                    Toast.makeText(this, "Вихід з акаунту...", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LoginActivity::class.java))
+                    startActivity(Intent(this, ProfileActivity::class.java))
                     finish()
                     true
                 }
