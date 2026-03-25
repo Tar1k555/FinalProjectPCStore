@@ -11,6 +11,16 @@ import androidx.appcompat.app.AppCompatActivity
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
+        val isLoggedIn = sharedPref.getBoolean("is_logged_in", false)
+
+        if (isLoggedIn) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
         setContentView(R.layout.activity_login)
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
@@ -27,24 +37,22 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val user = MockDatabase.users.find { it.email == email && it.password == password }
+            val savedEmail = sharedPref.getString("saved_email", "")
+            val savedPassword = sharedPref.getString("saved_password", "")
 
-            if (user != null) {
-                MockDatabase.currentUser = user
+            if (email == savedEmail && password == savedPassword) {
+                sharedPref.edit().putBoolean("is_logged_in", true).apply()
+
                 Toast.makeText(this, "Вхід успішний!", Toast.LENGTH_SHORT).show()
-
-                val intent = Intent(this, MainActivity::class.java)
-                startActivity(intent)
-
+                startActivity(Intent(this, MainActivity::class.java))
                 finish()
             } else {
-                Toast.makeText(this, "Неправильний email або пароль", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Неправильний email або пароль (або ви не зареєстровані)", Toast.LENGTH_SHORT).show()
             }
         }
 
         tvGoToRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
     }
 }
