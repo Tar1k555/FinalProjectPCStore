@@ -24,9 +24,8 @@ class MainActivity : AppCompatActivity() {
         // Нижня панель
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // Кліки на верхні іконки
         ivCart.setOnClickListener {
-            Toast.makeText(this, "Кошик ще в розробці", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, CartActivity::class.java))
         }
         ivThemeToggle.setOnClickListener {
             Toast.makeText(this, "Перемикач теми буде тут!", Toast.LENGTH_SHORT).show()

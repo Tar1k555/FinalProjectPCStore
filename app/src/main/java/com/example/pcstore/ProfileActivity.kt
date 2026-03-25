@@ -19,6 +19,9 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         val ivBack = findViewById<ImageView>(R.id.ivBack)
+        // ДОДАЛИ КОШИК ТУТ:
+        val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
+
         val etLastName = findViewById<EditText>(R.id.etLastName)
         val etFirstName = findViewById<EditText>(R.id.etFirstName)
         val etMiddleName = findViewById<EditText>(R.id.etMiddleName)
@@ -77,6 +80,10 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         ivBack.setOnClickListener { finish() }
+
+        ivCartProfile.setOnClickListener {
+            startActivity(Intent(this, CartActivity::class.java))
+        }
 
         bottomNav.selectedItemId = R.id.nav_profile
         bottomNav.setOnItemSelectedListener { item ->
