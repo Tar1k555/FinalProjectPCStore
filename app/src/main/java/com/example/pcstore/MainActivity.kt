@@ -3,22 +3,74 @@ package com.example.pcstore
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
+        // Верхні іконки
+        val ivCart = findViewById<ImageView>(R.id.ivCart)
+        val ivThemeToggle = findViewById<ImageView>(R.id.ivThemeToggle)
 
-        btnLogout.setOnClickListener {
-            // Записуємо в "блокнот", що юзер вийшов
-            val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-            sharedPref.edit().putBoolean("is_logged_in", false).apply()
+        // Кнопки товарів
+        val btnBuy1 = findViewById<Button>(R.id.btnBuy1)
+        val btnBuy2 = findViewById<Button>(R.id.btnBuy2)
 
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
+        // Нижня панель
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
+
+        // Кліки на верхні іконки
+        ivCart.setOnClickListener {
+            Toast.makeText(this, "Кошик ще в розробці", Toast.LENGTH_SHORT).show()
+        }
+        ivThemeToggle.setOnClickListener {
+            Toast.makeText(this, "Перемикач теми буде тут!", Toast.LENGTH_SHORT).show()
+        }
+
+        // Кліки на товари
+        btnBuy1.setOnClickListener {
+            Toast.makeText(this, "ПК додано в кошик!", Toast.LENGTH_SHORT).show()
+        }
+        btnBuy2.setOnClickListener {
+            Toast.makeText(this, "Мишку додано в кошик!", Toast.LENGTH_SHORT).show()
+        }
+
+        // Обробка натискань на нижнє меню
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    Toast.makeText(this, "Ви вже на Головній", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_pc -> {
+                    Toast.makeText(this, "Відділ ПК в розробці", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_profile -> {
+                    // ТИМЧАСОВО: Робимо тут функцію ВИХОДУ для зручного тестування
+                    val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
+                    sharedPref.edit().putBoolean("is_logged_in", false).apply()
+
+                    Toast.makeText(this, "Вихід з акаунту...", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_components -> {
+                    Toast.makeText(this, "Запчастини в розробці", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                R.id.nav_peripherals -> {
+                    Toast.makeText(this, "Периферія в розробці", Toast.LENGTH_SHORT).show()
+                    true
+                }
+                else -> false
+            }
         }
     }
 }
