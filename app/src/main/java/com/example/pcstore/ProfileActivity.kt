@@ -19,7 +19,6 @@ class ProfileActivity : AppCompatActivity() {
         setContentView(R.layout.activity_profile)
 
         val ivBack = findViewById<ImageView>(R.id.ivBack)
-        // ДОДАЛИ КОШИК ТУТ:
         val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
 
         val etLastName = findViewById<EditText>(R.id.etLastName)
