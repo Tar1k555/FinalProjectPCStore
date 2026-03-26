@@ -46,8 +46,9 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Ви вже на Головній", Toast.LENGTH_SHORT).show()
                     true
                 }
-                R.id.nav_pc -> {
-                    Toast.makeText(this, "Відділ ПК в розробці", Toast.LENGTH_SHORT).show()
+                R.id.nav_system_units -> {
+                    startActivity(Intent(this, SystemUnitsActivity::class.java))
+                    finish()
                     true
                 }
                 R.id.nav_profile -> {
