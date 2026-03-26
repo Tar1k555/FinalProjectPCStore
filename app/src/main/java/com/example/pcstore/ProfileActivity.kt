@@ -11,12 +11,28 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 import java.util.Calendar
 
 class ProfileActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+
+        auth = FirebaseAuth.getInstance()
+
+        // Якщо юзер якось потрапив сюди незалогіненим, кидаємо його на логін
+        val currentUser = auth.currentUser
+        if (currentUser == null) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
+        val currentUserEmail = currentUser.email ?: "unknown_user"
 
         val ivBack = findViewById<ImageView>(R.id.ivBack)
         val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
@@ -30,12 +46,14 @@ class ProfileActivity : AppCompatActivity() {
         val tvDob = findViewById<TextView>(R.id.tvDob)
         val tvGender = findViewById<TextView>(R.id.tvGender)
         val btnSaveProfile = findViewById<Button>(R.id.btnSaveProfile)
+        val btnLogout = findViewById<Button>(R.id.btnLogout) // Кнопка виходу
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-        val currentUserEmail = sharedPref.getString("saved_email", "unknown_user") ?: "unknown_user"
+        // Встановлюємо реальну пошту з Firebase
         etProfileEmail.setText(currentUserEmail)
 
+        // Завантажуємо локальні дані профілю (поки що з SharedPreferences)
+        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
         etLastName.setText(sharedPref.getString("${currentUserEmail}_lastname", ""))
         etFirstName.setText(sharedPref.getString("${currentUserEmail}_firstname", ""))
         etMiddleName.setText(sharedPref.getString("${currentUserEmail}_middlename", ""))
@@ -76,6 +94,17 @@ class ProfileActivity : AppCompatActivity() {
             editor.apply()
 
             Toast.makeText(this, "Дані успішно збережено!", Toast.LENGTH_SHORT).show()
+        }
+
+        // --- ЛОГІКА ВИХОДУ ---
+        btnLogout.setOnClickListener {
+            auth.signOut() // Виходимо з Firebase
+            Toast.makeText(this, "Ви вийшли з акаунта", Toast.LENGTH_SHORT).show()
+            // Перекидаємо на екран логіну та очищаємо історію екранів
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+            finish()
         }
 
         ivBack.setOnClickListener { finish() }

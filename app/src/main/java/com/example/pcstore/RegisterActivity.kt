@@ -1,16 +1,25 @@
 package com.example.pcstore
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class RegisterActivity : AppCompatActivity() {
+
+    // Ініціалізуємо Firebase Auth та Firestore
+    private lateinit var auth: FirebaseAuth
+    private val db = FirebaseFirestore.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
+
+        auth = FirebaseAuth.getInstance()
 
         val etEmail = findViewById<EditText>(R.id.etRegEmail)
         val etPassword = findViewById<EditText>(R.id.etRegPassword)
@@ -32,16 +41,29 @@ class RegisterActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Відкриваємо  SharedPreferences ("блокнот" з назвою PCStorePrefs)
-            val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
-            val editor = sharedPref.edit()
+            // РЕЄСТРАЦІЯ У FIREBASE
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val userId = auth.currentUser?.uid
 
-            editor.putString("saved_email", email)
-            editor.putString("saved_password", password)
-            editor.apply()
+                        val userMap = hashMapOf(
+                            "email" to email,
+                            "firstName" to "",
+                            "lastName" to "",
+                            "phone" to ""
+                        )
 
-            Toast.makeText(this, "Реєстрація успішна! Дані збережено.", Toast.LENGTH_SHORT).show()
-            finish()
+                        if (userId != null) {
+                            db.collection("users").document(userId).set(userMap)
+                        }
+
+                        Toast.makeText(this, "Реєстрація успішна!", Toast.LENGTH_SHORT).show()
+                        finish() // Повертаємось на екран входу
+                    } else {
+                        Toast.makeText(this, "Помилка: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
         }
     }
 }

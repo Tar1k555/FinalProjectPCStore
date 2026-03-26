@@ -7,15 +7,23 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.auth.FirebaseAuth
 
 class LoginActivity : AppCompatActivity() {
+
+    private lateinit var auth: FirebaseAuth
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // Одразу малюємо екран логіну, ніяких перевірок на автопропуск!
         setContentView(R.layout.activity_login)
 
-        val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
+        auth = FirebaseAuth.getInstance()
+
+        // Перевірка: якщо юзер вже залогінений, відразу кидаємо на Головну
+        if (auth.currentUser != null) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        }
 
         val etEmail = findViewById<EditText>(R.id.etEmail)
         val etPassword = findViewById<EditText>(R.id.etPassword)
@@ -31,19 +39,17 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val savedEmail = sharedPref.getString("saved_email", "")
-            val savedPassword = sharedPref.getString("saved_password", "")
-
-            if (email == savedEmail && password == savedPassword) {
-                // Зберігаємо статус, що ми залогінені (хоча зараз ми його не використовуємо для автопропуску, хай буде)
-                sharedPref.edit().putBoolean("is_logged_in", true).apply()
-
-                Toast.makeText(this, "Вхід успішний!", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this, MainActivity::class.java))
-                finish()
-            } else {
-                Toast.makeText(this, "Неправильний email або пароль (або ви не зареєстровані)", Toast.LENGTH_SHORT).show()
-            }
+            // ВХІД ЧЕРЕЗ FIREBASE
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this, "Вхід успішний!", Toast.LENGTH_SHORT).show()
+                        startActivity(Intent(this, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(this, "Помилка: ${task.exception?.message}", Toast.LENGTH_LONG).show()
+                    }
+                }
         }
 
         tvGoToRegister.setOnClickListener {

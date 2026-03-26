@@ -67,7 +67,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Galaxy S24 (Банер)"
+                android:text="(Банер)"
                 android:textColor="#FFFFFF"
                 android:layout_gravity="center"
                 android:textSize="20sp"
