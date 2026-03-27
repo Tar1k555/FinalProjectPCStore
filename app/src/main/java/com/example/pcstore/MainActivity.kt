@@ -61,7 +61,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_peripherals -> {
-                    Toast.makeText(this, "Периферія в розробці", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, PeripheralsActivity::class.java))
+                    finish()
                     true
                 }
                 else -> false
