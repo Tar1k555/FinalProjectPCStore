@@ -1,4 +1,4 @@
-package com.example.pcstore // Заміни на свій пакет, якщо відрізняється
+package com.example.pcstore
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,23 +16,13 @@ class PeripheralsActivity : AppCompatActivity() {
 
         // Кнопка Назад
         findViewById<ImageView>(R.id.ivBack).setOnClickListener {
-            finish() // Закриває цей екран і повертає на попередній
+            finish()
         }
 
-        // Налаштування списку (RecyclerView) у 2 колонки
         val rvPeripherals = findViewById<RecyclerView>(R.id.rvPeripherals)
         rvPeripherals.layoutManager = GridLayoutManager(this, 2)
 
-        // ТИМЧАСОВІ ДАНІ (Потім заміниш на завантаження з Firebase)
-        // Використовуй свій клас даних (наприклад, Product) та адаптер.
-        // val peripheralsList = listOf(
-        //     Product("Samsung 27\" Odyssey G5...", 7999, R.drawable.monitor_samsung),
-        //     Product("Razer Cobra 8500 dpi", 2299, R.drawable.mouse_razer),
-        //     Product("HATOR Rockfall 2...", 3199, R.drawable.keyboard_hator)
-        // )
-        // rvPeripherals.adapter = ProductAdapter(peripheralsList)
 
-        // Нижня навігація
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
         bottomNav.selectedItemId = R.id.nav_peripherals // Робить кнопку "Периферія" активною
 
@@ -58,7 +48,7 @@ class PeripheralsActivity : AppCompatActivity() {
                     false
                 }
                 R.id.nav_peripherals -> {
-                    true // Ми вже тут
+                    true
                 }
                 else -> false
             }

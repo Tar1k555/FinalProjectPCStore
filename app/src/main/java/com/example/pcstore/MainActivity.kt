@@ -57,7 +57,8 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.nav_components -> {
-                    Toast.makeText(this, "Запчастини в розробці", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this, ComponentsActivity::class.java))
+                    finish()
                     true
                 }
                 R.id.nav_peripherals -> {
