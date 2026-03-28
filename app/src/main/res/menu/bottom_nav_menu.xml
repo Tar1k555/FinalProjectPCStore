@@ -2,22 +2,22 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
-        android:icon="@android:drawable/ic_menu_gallery"
+        android:icon="@drawable/ic_home"
         android:title="Головна" />
     <item
         android:id="@+id/nav_system_units"
-        android:icon="@android:drawable/ic_menu_manage"
+        android:icon="@drawable/ic_pc_block"
         android:title="Системні блоки" />
     <item
         android:id="@+id/nav_profile"
-        android:icon="@android:drawable/ic_menu_my_calendar"
+        android:icon="@drawable/ic_profile"
         android:title="Профіль" />
     <item
         android:id="@+id/nav_components"
-        android:icon="@android:drawable/ic_menu_preferences"
+        android:icon="@drawable/ic_parts"
         android:title="Комплектуючі" />
     <item
         android:id="@+id/nav_peripherals"
-        android:icon="@android:drawable/ic_menu_compass"
+        android:icon="@drawable/ic_periphery"
         android:title="Периферія" />
 </menu>

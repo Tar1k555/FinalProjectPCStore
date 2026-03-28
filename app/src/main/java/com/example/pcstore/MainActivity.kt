@@ -13,15 +13,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Верхні іконки
         val ivCart = findViewById<ImageView>(R.id.ivCart)
         val ivThemeToggle = findViewById<ImageView>(R.id.ivThemeToggle)
 
-        // Кнопки товарів
         val btnBuy1 = findViewById<Button>(R.id.btnBuy1)
         val btnBuy2 = findViewById<Button>(R.id.btnBuy2)
 
-        // Нижня панель
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
         ivCart.setOnClickListener {
@@ -31,7 +28,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Перемикач теми буде тут!", Toast.LENGTH_SHORT).show()
         }
 
-        // Кліки на товари
         btnBuy1.setOnClickListener {
             Toast.makeText(this, "ПК додано в кошик!", Toast.LENGTH_SHORT).show()
         }
@@ -39,7 +35,6 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this, "Мишку додано в кошик!", Toast.LENGTH_SHORT).show()
         }
 
-        // Обробка натискань на нижнє меню
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_home -> {

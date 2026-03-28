@@ -43,14 +43,14 @@
                     android:id="@+id/ivCartProfile"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:src="@android:drawable/ic_menu_add"
+                    android:src="@drawable/ic_cart"
                     android:layout_marginEnd="12dp"/>
 
                 <ImageView
                     android:id="@+id/ivThemeProfile"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:src="@android:drawable/ic_menu_recent_history"/>
+                    android:src="@drawable/ic_theme_change"/>
             </LinearLayout>
 
             <TextView
