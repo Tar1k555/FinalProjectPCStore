@@ -3,188 +3,198 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAEAEA"> <ScrollView
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@id/bottom_navigation">
+    android:background="#EAEAEA">
 
-    <LinearLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottom_navigation">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="PC Store"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#000000"/>
-
-            <ImageView
-                android:id="@+id/ivCart"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_cart"
-                android:layout_marginEnd="16dp"/>
-
-            <ImageView
-                android:id="@+id/ivThemeToggle"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@drawable/ic_theme_change"/>
-        </LinearLayout>
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginTop="16dp"
-            android:background="#D1D1D1"
-            android:hint="Search"
-            android:paddingStart="16dp"
-            android:drawableStart="@drawable/ic_search"
-            android:drawablePadding="8dp"
-            android:inputType="text"/>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="16dp">
-            <ImageView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#8C9EFF"
-                android:scaleType="centerCrop"/>
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="PC Store"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000"/>
+
+                <ImageView
+                    android:id="@+id/ivCart"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_cart"
+                    android:layout_marginEnd="16dp"/>
+
+                <ImageView
+                    android:id="@+id/ivThemeToggle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_theme_change"/>
+            </LinearLayout>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="16dp"
+                android:background="#D1D1D1"
+                android:hint="Search"
+                android:paddingStart="16dp"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="8dp"
+                android:inputType="text"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="150dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="16dp">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#8C9EFF"
+                    android:scaleType="centerCrop"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="(Банер)"
+                    android:textColor="#FFFFFF"
+                    android:layout_gravity="center"
+                    android:textSize="20sp"
+                    android:textStyle="bold"/>
+            </androidx.cardview.widget.CardView>
+
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="(Банер)"
-                android:textColor="#FFFFFF"
-                android:layout_gravity="center"
-                android:textSize="20sp"
-                android:textStyle="bold"/>
-        </androidx.cardview.widget.CardView>
+                android:text="🔥 Акції дня!"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="#000000"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Акції дня!"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="#000000"
-            android:gravity="center"
-            android:layout_marginTop="16dp"
-            android:layout_marginBottom="16dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout
-                    android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:weightSum="2">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:src="@android:drawable/ic_menu_gallery"/>
-                    <TextView
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF">
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="ULTIMATE Gaming PC"
-                        android:textColor="#333333"
-                        android:textStyle="bold"
-                        android:layout_marginTop="8dp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="252 121 ₴"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="222 222 ₴"
-                        android:textColor="#FF0000"
-                        android:textStyle="bold"
-                        android:textSize="16sp"/>
-                    <Button
-                        android:id="@+id/btnBuy1"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="У кошик"
-                        android:backgroundTint="#FF0000"
-                        android:layout_marginTop="8dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        android:orientation="vertical"
+                        android:padding="12dp">
+                        <ImageView
+                            android:id="@+id/ivDeal1"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@android:drawable/ic_menu_gallery"/>
+                        <TextView
+                            android:id="@+id/tvNameDeal1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Завантаження..."
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:layout_marginTop="8dp"/>
+                        <TextView
+                            android:id="@+id/tvOldPriceDeal1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+                        <TextView
+                            android:id="@+id/tvNewPriceDeal1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            android:textColor="#FF0000"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+                        <Button
+                            android:id="@+id/btnBuyDeal1"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="У кошик"
+                            android:backgroundTint="#FF0000"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="8dp"
-                app:cardCornerRadius="16dp"
-                app:cardBackgroundColor="#FFFFFF">
-                <LinearLayout
-                    android:layout_width="match_parent"
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="12dp">
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="120dp"
-                        android:src="@android:drawable/ic_menu_gallery"/>
-                    <TextView
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardBackgroundColor="#FFFFFF">
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Razer Cobra"
-                        android:textColor="#333333"
-                        android:textStyle="bold"
-                        android:layout_marginTop="8dp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="2 299 ₴"
-                        android:textSize="12sp"
-                        android:layout_marginTop="4dp"/>
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="1 999 ₴"
-                        android:textColor="#FF0000"
-                        android:textStyle="bold"
-                        android:textSize="16sp"/>
-                    <Button
-                        android:id="@+id/btnBuy2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="У кошик"
-                        android:backgroundTint="#FF0000"
-                        android:layout_marginTop="8dp"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
+                        android:orientation="vertical"
+                        android:padding="12dp">
+                        <ImageView
+                            android:id="@+id/ivDeal2"
+                            android:layout_width="match_parent"
+                            android:layout_height="120dp"
+                            android:src="@android:drawable/ic_menu_gallery"/>
+                        <TextView
+                            android:id="@+id/tvNameDeal2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Завантаження..."
+                            android:textColor="#333333"
+                            android:textStyle="bold"
+                            android:layout_marginTop="8dp"/>
+                        <TextView
+                            android:id="@+id/tvOldPriceDeal2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            android:textSize="12sp"
+                            android:layout_marginTop="4dp"/>
+                        <TextView
+                            android:id="@+id/tvNewPriceDeal2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="..."
+                            android:textColor="#FF0000"
+                            android:textStyle="bold"
+                            android:textSize="16sp"/>
+                        <Button
+                            android:id="@+id/btnBuyDeal2"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="У кошик"
+                            android:backgroundTint="#FF0000"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </androidx.core.widget.NestedScrollView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
