@@ -45,10 +45,9 @@ class ProfileActivity : AppCompatActivity() {
         val tvDob = findViewById<TextView>(R.id.tvDob)
         val tvGender = findViewById<TextView>(R.id.tvGender)
         val btnSaveProfile = findViewById<Button>(R.id.btnSaveProfile)
-        val btnLogout = findViewById<Button>(R.id.btnLogout) // Кнопка виходу
+        val btnLogout = findViewById<Button>(R.id.btnLogout)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // Встановлюємо реальну пошту з Firebase
         etProfileEmail.setText(currentUserEmail)
 
         val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
@@ -94,11 +93,9 @@ class ProfileActivity : AppCompatActivity() {
             Toast.makeText(this, "Дані успішно збережено!", Toast.LENGTH_SHORT).show()
         }
 
-        // --- ЛОГІКА ВИХОДУ ---
         btnLogout.setOnClickListener {
-            auth.signOut() // Виходимо з Firebase
+            auth.signOut()
             Toast.makeText(this, "Ви вийшли з акаунта", Toast.LENGTH_SHORT).show()
-            // Перекидаємо на екран логіну та очищаємо історію екранів
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
@@ -119,7 +116,24 @@ class ProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_profile -> true
+                R.id.nav_system_units -> {
+                    startActivity(Intent(this, SystemUnitsActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_profile -> {
+                    true
+                }
+                R.id.nav_components -> {
+                    startActivity(Intent(this, ComponentsActivity::class.java))
+                    finish()
+                    true
+                }
+                R.id.nav_peripherals -> {
+                    startActivity(Intent(this, PeripheralsActivity::class.java))
+                    finish()
+                    true
+                }
                 else -> false
             }
         }
