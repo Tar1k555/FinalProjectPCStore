@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAEAEA"> <LinearLayout
+    android:background="#FFFFFF"> <LinearLayout
     android:id="@+id/toolbarCart"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -17,8 +17,6 @@
         android:id="@+id/ivBackCart"
         android:layout_width="32dp"
         android:layout_height="32dp"
-        android:clickable="true"
-        android:focusable="true"
         android:src="@android:drawable/ic_menu_revert" />
 
     <TextView
@@ -26,7 +24,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:gravity="center"
-        android:text="Кошик"
+        android:text="Мій Кошик"
         android:textColor="#000000"
         android:textSize="18sp"
         android:textStyle="bold" />
@@ -37,17 +35,18 @@
 </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/layoutEmptyCart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="24dp"
+        android:visibility="gone">
 
         <ImageView
-            android:id="@+id/ivSadCart"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:src="@android:drawable/ic_dialog_alert"
             android:layout_marginBottom="24dp"/>
 
@@ -60,35 +59,75 @@
             android:textStyle="bold"
             android:layout_marginBottom="24dp"/>
 
+        <Button
+            android:id="@+id/btnContinueShopping"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Перейти до покупок"
+            android:backgroundTint="#D1C4E9"
+            android:textColor="#000000"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/layoutCartItems"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/toolbarCart"
+        android:layout_above="@id/layoutCheckout"
+        android:visibility="visible">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCartItems"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutCheckout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/bottom_navigation"
+        android:background="#FFFFFF"
+        android:elevation="8dp"
+        android:orientation="vertical"
+        android:padding="16dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center"
-            android:weightSum="2">
+            android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/btnContinueShopping"
+            <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Перейти до покупок"
-                android:textSize="12sp"
-                android:textColor="#000000"
-                android:backgroundTint="#D1C4E9"
-                android:layout_marginEnd="8dp"/>
+                android:text="Разом:"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/btnViewOrders"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tvTotalPrice"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Переглянути історію замовлень"
-                android:textSize="10sp"
-                android:textColor="#000000"
-                android:backgroundTint="#D1C4E9"
-                android:layout_marginStart="8dp"/>
+                android:text="0 ₴"
+                android:textColor="#E53935"
+                android:textSize="20sp"
+                android:textStyle="bold" />
         </LinearLayout>
+
+        <Button
+            android:id="@+id/btnCheckout"
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:text="Оформити замовлення"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

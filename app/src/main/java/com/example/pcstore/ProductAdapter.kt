@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class ProductAdapter(private val productList: List<Product>) :
     RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
@@ -51,6 +54,28 @@ class ProductAdapter(private val productList: List<Product>) :
         }
 
         holder.btnAddToCart.setOnClickListener {
+            val auth = FirebaseAuth.getInstance()
+            val db = FirebaseFirestore.getInstance()
+            val uid = auth.currentUser?.uid
+            val context = holder.itemView.context // Контекст для Toast
+
+            if (uid != null) {
+                val cartItem = hashMapOf(
+                    "name" to product.name,
+                    "price" to product.price
+                )
+
+                db.collection("users").document(uid).collection("cart")
+                    .add(cartItem)
+                    .addOnSuccessListener {
+                        Toast.makeText(context, "${product.name} додано в кошик!", Toast.LENGTH_SHORT).show()
+                    }
+                    .addOnFailureListener { e ->
+                        Toast.makeText(context, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
+                    }
+            } else {
+                Toast.makeText(context, "Будь ласка, авторизуйтесь", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
