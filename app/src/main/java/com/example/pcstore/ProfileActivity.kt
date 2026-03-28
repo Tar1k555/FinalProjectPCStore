@@ -24,7 +24,6 @@ class ProfileActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Якщо юзер якось потрапив сюди незалогіненим, кидаємо його на логін
         val currentUser = auth.currentUser
         if (currentUser == null) {
             startActivity(Intent(this, LoginActivity::class.java))
@@ -52,7 +51,6 @@ class ProfileActivity : AppCompatActivity() {
         // Встановлюємо реальну пошту з Firebase
         etProfileEmail.setText(currentUserEmail)
 
-        // Завантажуємо локальні дані профілю (поки що з SharedPreferences)
         val sharedPref = getSharedPreferences("PCStorePrefs", MODE_PRIVATE)
         etLastName.setText(sharedPref.getString("${currentUserEmail}_lastname", ""))
         etFirstName.setText(sharedPref.getString("${currentUserEmail}_firstname", ""))
