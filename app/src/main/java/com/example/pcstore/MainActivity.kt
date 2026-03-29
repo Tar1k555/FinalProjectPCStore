@@ -23,9 +23,11 @@ class MainActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
 
     private val handler = Handler(Looper.getMainLooper())
+    private val updateInterval = 60000L // 60 секунд
 
-    // Час оновлення акцій: 60 000 мс = 1 хвилина.
-    private val updateInterval = 60000L
+    companion object {
+        var lastUpdateTime = 0L
+    }
 
     private val updateDealsRunnable = object : Runnable {
         override fun run() {
@@ -93,16 +95,53 @@ class MainActivity : AppCompatActivity() {
             val allProducts = result.documents.toMutableList()
 
             if (allProducts.size >= 2) {
-                allProducts.shuffle()
-                val deal1 = allProducts[0]
-                val deal2 = allProducts[1]
+                val currentTime = System.currentTimeMillis()
 
-                DealManager.currentDeals.clear()
-                val discount1 = Random.nextInt(5, 16)
-                val discount2 = Random.nextInt(5, 16)
-                DealManager.currentDeals[deal1.id] = discount1
-                DealManager.currentDeals[deal2.id] = discount2
+                val deal1: DocumentSnapshot
+                val deal2: DocumentSnapshot
+                val discount1: Int
+                val discount2: Int
 
+                if (currentTime - lastUpdateTime >= updateInterval || DealManager.currentDeals.size < 2) {
+                    allProducts.shuffle()
+                    deal1 = allProducts[0]
+                    deal2 = allProducts[1]
+
+                    discount1 = Random.nextInt(5, 16)
+                    discount2 = Random.nextInt(5, 16)
+
+                    DealManager.currentDeals.clear()
+                    DealManager.currentDeals[deal1.id] = discount1
+                    DealManager.currentDeals[deal2.id] = discount2
+
+                    lastUpdateTime = currentTime // Запам'ятовуємо час оновлення
+                } else {
+                    // Хвилина ЩЕ НЕ пройшла! Беремо старі акції, щоб вони не стрибали
+                    val dealIds = DealManager.currentDeals.keys.toList()
+
+                    val savedDeal1 = allProducts.firstOrNull { it.id == dealIds[0] }
+                    val savedDeal2 = allProducts.firstOrNull { it.id == dealIds[1] }
+
+                    if (savedDeal1 != null && savedDeal2 != null) {
+                        deal1 = savedDeal1
+                        deal2 = savedDeal2
+                        discount1 = DealManager.currentDeals[dealIds[0]] ?: 0
+                        discount2 = DealManager.currentDeals[dealIds[1]] ?: 0
+                    } else {
+                        // Якщо сталася помилка (наприклад, товар видалили з БД), генеруємо нові
+                        allProducts.shuffle()
+                        deal1 = allProducts[0]
+                        deal2 = allProducts[1]
+                        discount1 = Random.nextInt(5, 16)
+                        discount2 = Random.nextInt(5, 16)
+                        DealManager.currentDeals.clear()
+                        DealManager.currentDeals[deal1.id] = discount1
+                        DealManager.currentDeals[deal2.id] = discount2
+                        lastUpdateTime = currentTime
+                    }
+                }
+
+                // Відображаємо товари на екрані (нові або старі - залежить від перевірки вище)
                 setupDealCard(
                     deal1, discount1,
                     findViewById(R.id.tvNameDeal1),
@@ -120,7 +159,6 @@ class MainActivity : AppCompatActivity() {
                     findViewById(R.id.ivDeal2),
                     findViewById(R.id.btnBuyDeal2)
                 )
-            } else {
             }
         }.addOnFailureListener {
             Toast.makeText(this, "Помилка завантаження акцій", Toast.LENGTH_SHORT).show()
@@ -137,7 +175,6 @@ class MainActivity : AppCompatActivity() {
         btnBuy: Button
     ) {
         val name = doc.getString("name") ?: "Товар"
-
         val oldPrice = doc.get("price")?.toString()?.toLong() ?: 0L
         val imageUrl = doc.getString("imageUrl") ?: ""
 
@@ -146,7 +183,6 @@ class MainActivity : AppCompatActivity() {
         tvName.text = name
         tvOldPrice.text = "$oldPrice ₴"
         tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-
         tvNewPrice.text = "$newPrice ₴ (-$discountPercent%)"
 
         if (imageUrl.isNotEmpty()) {
@@ -185,7 +221,7 @@ class MainActivity : AppCompatActivity() {
         db.collection("users").document(uid).collection("cart")
             .add(cartItem)
             .addOnSuccessListener {
-                Toast.makeText(this, " $name додано в кошик по акції!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "🎉 $name додано в кошик по акції!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Помилка додавання", Toast.LENGTH_SHORT).show()
