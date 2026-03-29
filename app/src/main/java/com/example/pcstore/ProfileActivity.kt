@@ -29,8 +29,11 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var rvOrders: RecyclerView
-    private lateinit var orderAdapter: OrderAdapter
 
+    private lateinit var orderAdapter: OrderAdapter
+    private lateinit var favoriteAdapter: ProductAdapter
+
+    private val favoriteProducts = mutableListOf<Product>()
     private val activeOrders = mutableListOf<Order>()
     private val historyOrders = mutableListOf<Order>()
 
@@ -51,6 +54,7 @@ class ProfileActivity : AppCompatActivity() {
         val uid = currentUser.uid
         val currentUserEmail = currentUser.email ?: "unknown_user"
 
+        // Ініціалізація UI
         val ivBack = findViewById<ImageView>(R.id.ivBack)
         val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
 
@@ -63,12 +67,13 @@ class ProfileActivity : AppCompatActivity() {
         val tvGender = findViewById<TextView>(R.id.tvGender)
         val btnSaveProfile = findViewById<Button>(R.id.btnSaveProfile)
         val btnLogout = findViewById<Button>(R.id.btnLogout)
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
         val btnMyOrders = findViewById<Button>(R.id.btnMyOrders)
         val btnFavorites = findViewById<Button>(R.id.btnFavorites)
         val btnOrderHistory = findViewById<Button>(R.id.btnOrderHistory)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
+        // Налаштування RecyclerView
         rvOrders = findViewById(R.id.rvOrders)
         rvOrders.layoutManager = LinearLayoutManager(this)
         orderAdapter = OrderAdapter(emptyList())
@@ -76,6 +81,7 @@ class ProfileActivity : AppCompatActivity() {
 
         etProfileEmail.setText(currentUserEmail)
 
+        // Завантаження даних профілю
         db.collection("users").document(uid).get().addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 etLastName.setText(document.getString("lastName") ?: "")
@@ -87,25 +93,19 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
+        // Обробники кліків для профілю
         tvDob.setOnClickListener {
             val calendar = Calendar.getInstance()
-            val year = calendar.get(Calendar.YEAR)
-            val month = calendar.get(Calendar.MONTH)
-            val day = calendar.get(Calendar.DAY_OF_MONTH)
-
-            DatePickerDialog(this, { _, selectedYear, selectedMonth, selectedDay ->
-                val dateStr = "$selectedDay/${selectedMonth + 1}/$selectedYear"
-                tvDob.text = dateStr
-            }, year, month, day).show()
+            DatePickerDialog(this, { _, year, month, day ->
+                tvDob.text = "$day/${month + 1}/$year"
+            }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)).show()
         }
 
         tvGender.setOnClickListener {
             val genders = arrayOf("Чоловіча", "Жіноча", "Не вказувати")
             AlertDialog.Builder(this)
                 .setTitle("Оберіть стать")
-                .setItems(genders) { _, which ->
-                    tvGender.text = "Стать: ${genders[which]}"
-                }
+                .setItems(genders) { _, which -> tvGender.text = "Стать: ${genders[which]}" }
                 .show()
         }
 
@@ -119,12 +119,9 @@ class ProfileActivity : AppCompatActivity() {
                 "gender" to tvGender.text.toString(),
                 "email" to currentUserEmail
             )
-
-            db.collection("users").document(uid)
-                .set(userData)
-                .addOnSuccessListener {
-                    Toast.makeText(this, "Дані успішно збережено!", Toast.LENGTH_SHORT).show()
-                }
+            db.collection("users").document(uid).set(userData).addOnSuccessListener {
+                Toast.makeText(this, "Дані успішно збережено!", Toast.LENGTH_SHORT).show()
+            }
         }
 
         btnLogout.setOnClickListener {
@@ -135,6 +132,7 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
+        // --- ВИПРАВЛЕНА НАВІГАЦІЯ ---
         ivBack.setOnClickListener { finish() }
 
         ivCartProfile.setOnClickListener {
@@ -164,52 +162,67 @@ class ProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_profile -> true
+                R.id.nav_profile -> true // Залишаємось тут
                 else -> false
             }
         }
 
-        btnMyOrders.setOnClickListener { loadOrders("active") }
-        btnOrderHistory.setOnClickListener { loadOrders("history") }
+        // Перемикання списків (Замовлення / Обране)
+        btnMyOrders.setOnClickListener {
+            rvOrders.adapter = orderAdapter
+            loadOrders("active")
+        }
+        btnOrderHistory.setOnClickListener {
+            rvOrders.adapter = orderAdapter
+            loadOrders("history")
+        }
         btnFavorites.setOnClickListener {
-            Toast.makeText(this, "Обране в розробці!", Toast.LENGTH_SHORT).show()
+            loadFavorites()
         }
 
         loadOrders("active")
     }
 
+    private fun loadFavorites() {
+        val uid = auth.currentUser?.uid ?: return
+        favoriteAdapter = ProductAdapter(favoriteProducts)
+        rvOrders.adapter = favoriteAdapter // Змінюємо адаптер на ProductAdapter
+
+        db.collection("users").document(uid).collection("wishlist").get()
+            .addOnSuccessListener { documents ->
+                favoriteProducts.clear()
+                for (doc in documents) {
+                    val product = doc.toObject(Product::class.java)
+                    product.id = doc.id
+                    favoriteProducts.add(product)
+                }
+                favoriteAdapter.updateList(favoriteProducts)
+                if (favoriteProducts.isEmpty()) {
+                    Toast.makeText(this, "Список обраного порожній", Toast.LENGTH_SHORT).show()
+                }
+            }
+    }
+
     private fun loadOrders(type: String) {
         val uid = auth.currentUser?.uid ?: return
-
-        db.collection("users").document(uid).collection("orders")
-            .get()
+        db.collection("users").document(uid).collection("orders").get()
             .addOnSuccessListener { documents ->
                 activeOrders.clear()
                 historyOrders.clear()
-
                 val currentTime = System.currentTimeMillis()
 
                 for (document in documents) {
                     val order = document.toObject(Order::class.java)
                     val diffMinutes = (currentTime - order.timestamp) / 60000
-
-                    if (diffMinutes >= 8) {
-                        historyOrders.add(order)
-                    } else {
-                        activeOrders.add(order)
-                    }
+                    if (diffMinutes >= 8) historyOrders.add(order) else activeOrders.add(order)
                 }
 
                 if (type == "history") {
-                    if (historyOrders.isEmpty()) {
-                        Toast.makeText(this@ProfileActivity, "Історія замовлень порожня", Toast.LENGTH_SHORT).show()
-                    }
                     orderAdapter.updateList(historyOrders)
+                    if (historyOrders.isEmpty()) Toast.makeText(this, "Історія порожня", Toast.LENGTH_SHORT).show()
                 } else if (type == "active") {
-                    if (activeOrders.isEmpty()) {
-                        Toast.makeText(this@ProfileActivity, "Немає активних замовлень", Toast.LENGTH_SHORT).show()
-                    }
                     orderAdapter.updateList(activeOrders)
+                    if (activeOrders.isEmpty()) Toast.makeText(this, "Немає активних замовлень", Toast.LENGTH_SHORT).show()
                 }
             }
     }

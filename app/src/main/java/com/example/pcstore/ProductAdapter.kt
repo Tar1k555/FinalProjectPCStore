@@ -26,38 +26,38 @@ class ProductAdapter(private var productList: List<Product>) :
         val tvPrice: TextView = itemView.findViewById(R.id.tvPrice)
         val tvOldPrice: TextView = itemView.findViewById(R.id.tvOldPrice)
         val btnAddToCart: MaterialCardView = itemView.findViewById(R.id.btnAddToCart)
+        val ivFavorite: ImageView = itemView.findViewById(R.id.ivFavorite) // Сердечко в item_product.xml
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_product, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_product, parent, false)
         return ProductViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
         val product = productList[position]
+        val auth = FirebaseAuth.getInstance()
+        val db = FirebaseFirestore.getInstance()
+        val uid = auth.currentUser?.uid
 
         holder.tvProductName.text = product.name
         holder.rbRating.rating = product.rating
 
+        // Логіка ціни та знижок
         val discountPercent = DealManager.getDiscount(product.id)
-
-        val originalPrice = product.price.toString().toLong()
+        val originalPrice = product.price.toLong()
         var finalPrice: Long = originalPrice
 
         if (discountPercent != null) {
             finalPrice = originalPrice - (originalPrice * discountPercent / 100)
-
             holder.tvPrice.text = "$finalPrice ₴ (-$discountPercent%)"
             holder.tvPrice.setTextColor(Color.RED)
-
             holder.tvOldPrice.visibility = View.VISIBLE
             holder.tvOldPrice.text = "$originalPrice ₴"
             holder.tvOldPrice.paintFlags = holder.tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
             holder.tvPrice.text = "$originalPrice ₴"
             holder.tvPrice.setTextColor(Color.BLACK)
-
             if (product.oldPrice != null) {
                 holder.tvOldPrice.visibility = View.VISIBLE
                 holder.tvOldPrice.text = "${product.oldPrice} ₴"
@@ -68,54 +68,58 @@ class ProductAdapter(private var productList: List<Product>) :
         }
 
         if (product.imageUrl.isNotEmpty()) {
-            Glide.with(holder.itemView.context)
-                .load(product.imageUrl)
-                .into(holder.ivProduct)
+            Glide.with(holder.itemView.context).load(product.imageUrl).into(holder.ivProduct)
+        }
+
+        if (uid != null) {
+            val favRef = db.collection("users").document(uid).collection("wishlist").document(product.id)
+
+            favRef.get().addOnSuccessListener { doc ->
+                if (doc.exists()) {
+                    holder.ivFavorite.setImageResource(R.drawable.ic_heart_filled)
+                    holder.ivFavorite.tag = "filled"
+                } else {
+                    holder.ivFavorite.setImageResource(R.drawable.ic_heart_empty)
+                    holder.ivFavorite.tag = "empty"
+                }
+            }
+
+            holder.ivFavorite.setOnClickListener {
+                if (holder.ivFavorite.tag == "empty") {
+                    favRef.set(product).addOnSuccessListener {
+                        holder.ivFavorite.setImageResource(R.drawable.ic_heart_filled)
+                        holder.ivFavorite.tag = "filled"
+                    }
+                } else {
+                    favRef.delete().addOnSuccessListener {
+                        holder.ivFavorite.setImageResource(R.drawable.ic_heart_empty)
+                        holder.ivFavorite.tag = "empty"
+                    }
+                }
+            }
         }
 
         holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(context, ProductDetailActivity::class.java)
+            val intent = Intent(holder.itemView.context, ProductDetailActivity::class.java)
             intent.putExtra("PRODUCT_ID", product.id)
-            context.startActivity(intent)
+            holder.itemView.context.startActivity(intent)
         }
 
         holder.btnAddToCart.setOnClickListener {
-            val auth = FirebaseAuth.getInstance()
-            val db = FirebaseFirestore.getInstance()
-            val uid = auth.currentUser?.uid
-            val context = holder.itemView.context
-
             if (uid != null) {
-                val cartItem = hashMapOf(
-                    "name" to product.name,
-                    "price" to finalPrice // Додаємо акційну ціну, якщо є знижка!
-                )
-
-                db.collection("users").document(uid).collection("cart")
-                    .add(cartItem)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "${product.name} додано в кошик!", Toast.LENGTH_SHORT).show()
-                    }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Помилка: ${e.message}", Toast.LENGTH_SHORT).show()
-                    }
-            } else {
-                Toast.makeText(context, "Будь ласка, авторизуйтесь", Toast.LENGTH_SHORT).show()
+                val cartItem = hashMapOf("name" to product.name, "price" to finalPrice)
+                db.collection("users").document(uid).collection("cart").add(cartItem)
+                    .addOnSuccessListener { Toast.makeText(holder.itemView.context, "Додано в кошик!", Toast.LENGTH_SHORT).show() }
             }
         }
     }
 
-    override fun getItemCount(): Int {
-        return productList.size
-    }
+    override fun getItemCount() = productList.size
 
     fun updateList(newList: List<Product>) {
         productList = newList
         notifyDataSetChanged()
     }
 
-    fun getCurrentList(): List<Product> {
-        return productList
-    }
+    fun getCurrentList() = productList
 }

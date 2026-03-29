@@ -19,7 +19,7 @@
             android:id="@+id/ivFavorite"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/ic_heart"
+            android:src="@drawable/ic_heart_empty"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

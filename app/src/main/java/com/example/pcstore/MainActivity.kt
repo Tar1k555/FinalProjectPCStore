@@ -5,6 +5,7 @@ import android.graphics.Paint
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
@@ -54,7 +55,7 @@ class MainActivity : AppCompatActivity() {
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_home -> { true }
+                R.id.nav_home -> true
                 R.id.nav_system_units -> {
                     startActivity(Intent(this, SystemUnitsActivity::class.java))
                     finish()
@@ -97,7 +98,6 @@ class MainActivity : AppCompatActivity() {
 
             if (allProducts.size >= 2) {
                 val currentTime = System.currentTimeMillis()
-
                 val deal1: DocumentSnapshot
                 val deal2: DocumentSnapshot
                 val discount1: Int
@@ -115,11 +115,9 @@ class MainActivity : AppCompatActivity() {
                     DealManager.currentDeals[deal1.id] = discount1
                     DealManager.currentDeals[deal2.id] = discount2
 
-                    lastUpdateTime = currentTime // Запам'ятовуємо час оновлення
+                    lastUpdateTime = currentTime
                 } else {
-                    // Хвилина ЩЕ НЕ пройшла! Беремо старі акції, щоб вони не стрибали
                     val dealIds = DealManager.currentDeals.keys.toList()
-
                     val savedDeal1 = allProducts.firstOrNull { it.id == dealIds[0] }
                     val savedDeal2 = allProducts.firstOrNull { it.id == dealIds[1] }
 
@@ -141,47 +139,23 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                setupDealCard(
-                    deal1, discount1,
-                    findViewById(R.id.tvNameDeal1),
-                    findViewById(R.id.tvOldPriceDeal1),
-                    findViewById(R.id.tvNewPriceDeal1),
-                    findViewById(R.id.ivDeal1),
-                    findViewById(R.id.btnBuyDeal1)
-                )
-
-                setupDealCard(
-                    deal2, discount2,
-                    findViewById(R.id.tvNameDeal2),
-                    findViewById(R.id.tvOldPriceDeal2),
-                    findViewById(R.id.tvNewPriceDeal2),
-                    findViewById(R.id.ivDeal2),
-                    findViewById(R.id.btnBuyDeal2)
-                )
+                setupDealCard(deal1, discount1, findViewById(R.id.tvNameDeal1), findViewById(R.id.tvOldPriceDeal1), findViewById(R.id.tvNewPriceDeal1), findViewById(R.id.ivDeal1), findViewById(R.id.btnBuyDeal1))
+                setupDealCard(deal2, discount2, findViewById(R.id.tvNameDeal2), findViewById(R.id.tvOldPriceDeal2), findViewById(R.id.tvNewPriceDeal2), findViewById(R.id.ivDeal2), findViewById(R.id.btnBuyDeal2))
             }
-        }.addOnFailureListener {
-            Toast.makeText(this, "Помилка завантаження акцій", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setupDealCard(
-        doc: DocumentSnapshot,
-        discountPercent: Int,
-        tvName: TextView,
-        tvOldPrice: TextView,
-        tvNewPrice: TextView,
-        ivCardImage: ImageView,
-        btnBuy: Button
-    ) {
+    private fun setupDealCard(doc: DocumentSnapshot, discountPercent: Int, tvName: TextView, tvOldPrice: TextView, tvNewPrice: TextView, ivCardImage: ImageView, btnBuy: Button) {
         val name = doc.getString("name") ?: "Товар"
-        val oldPrice = doc.getLong("price") ?: 0L // Використовуємо getLong для безпеки
+        val oldPrice = doc.getLong("price") ?: 0L
         val imageUrl = doc.getString("imageUrl") ?: ""
         val rating = doc.getDouble("rating") ?: 0.0
+        val productId = doc.id
+        val uid = auth.currentUser?.uid
 
-        val rb = if (tvName.id == R.id.tvNameDeal1) findViewById<RatingBar>(R.id.rbRatingDeal1)
-        else findViewById<RatingBar>(R.id.rbRatingDeal2)
-        val tvR = if (tvName.id == R.id.tvNameDeal1) findViewById<TextView>(R.id.tvRatingValueDeal1)
-        else findViewById<TextView>(R.id.tvRatingValueDeal2)
+        val rb = if (tvName.id == R.id.tvNameDeal1) findViewById<RatingBar>(R.id.rbRatingDeal1) else findViewById<RatingBar>(R.id.rbRatingDeal2)
+        val tvR = if (tvName.id == R.id.tvNameDeal1) findViewById<TextView>(R.id.tvRatingValueDeal1) else findViewById<TextView>(R.id.tvRatingValueDeal2)
+        val ivFav = if (tvName.id == R.id.tvNameDeal1) findViewById<ImageView>(R.id.ivFavDeal1) else findViewById<ImageView>(R.id.ivFavDeal2)
 
         val newPrice = oldPrice - (oldPrice * discountPercent / 100)
 
@@ -189,7 +163,6 @@ class MainActivity : AppCompatActivity() {
         tvOldPrice.text = "$oldPrice ₴"
         tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         tvNewPrice.text = "$newPrice ₴ (-$discountPercent%)"
-
         rb?.rating = rating.toFloat()
         tvR?.text = rating.toString()
 
@@ -197,37 +170,49 @@ class MainActivity : AppCompatActivity() {
             Glide.with(this).load(imageUrl).centerCrop().into(ivCardImage)
         }
 
+        if (uid != null && ivFav != null) {
+            val favRef = db.collection("users").document(uid).collection("wishlist").document(productId)
+            favRef.get().addOnSuccessListener { d ->
+                if (d.exists()) {
+                    ivFav.setImageResource(R.drawable.ic_heart_filled)
+                    ivFav.tag = "filled"
+                } else {
+                    ivFav.setImageResource(R.drawable.ic_heart_empty)
+                    ivFav.tag = "empty"
+                }
+            }
+            ivFav.setOnClickListener {
+                if (ivFav.tag == "empty") {
+                    val product = doc.toObject(Product::class.java)
+                    product?.id = productId
+                    if (product != null) {
+                        favRef.set(product).addOnSuccessListener {
+                            ivFav.setImageResource(R.drawable.ic_heart_filled)
+                            ivFav.tag = "filled"
+                        }
+                    }
+                } else {
+                    favRef.delete().addOnSuccessListener {
+                        ivFav.setImageResource(R.drawable.ic_heart_empty)
+                        ivFav.tag = "empty"
+                    }
+                }
+            }
+        }
+
         ivCardImage.setOnClickListener {
             val intent = Intent(this, ProductDetailActivity::class.java)
-            intent.putExtra("PRODUCT_ID", doc.id)
+            intent.putExtra("PRODUCT_ID", productId)
             startActivity(intent)
         }
 
-        btnBuy.setOnClickListener {
-            addToCart(name, newPrice)
-        }
+        btnBuy.setOnClickListener { addToCart(name, newPrice) }
     }
 
     private fun addToCart(name: String, price: Long) {
-        val uid = auth.currentUser?.uid
-        if (uid == null) {
-            Toast.makeText(this, "Увійдіть в акаунт!", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        val cartItem = hashMapOf(
-            "name" to name,
-            "price" to price,
-            "timestamp" to System.currentTimeMillis()
-        )
-
-        db.collection("users").document(uid).collection("cart")
-            .add(cartItem)
-            .addOnSuccessListener {
-                Toast.makeText(this, "🎉 $name додано в кошик по акції!", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(this, "Помилка додавання", Toast.LENGTH_SHORT).show()
-            }
+        val uid = auth.currentUser?.uid ?: return
+        val cartItem = hashMapOf("name" to name, "price" to price, "timestamp" to System.currentTimeMillis())
+        db.collection("users").document(uid).collection("cart").add(cartItem)
+            .addOnSuccessListener { Toast.makeText(this, "🎉 $name додано!", Toast.LENGTH_SHORT).show() }
     }
 }
