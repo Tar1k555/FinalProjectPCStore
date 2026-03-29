@@ -21,7 +21,6 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
-
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -30,14 +29,12 @@
                     android:textSize="24sp"
                     android:textStyle="bold"
                     android:textColor="#000000"/>
-
                 <ImageView
                     android:id="@+id/ivCart"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_cart"
                     android:layout_marginEnd="16dp"/>
-
                 <ImageView
                     android:id="@+id/ivThemeToggle"
                     android:layout_width="32dp"
@@ -95,44 +92,77 @@
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="340dp"
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="#FFFFFF">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:padding="12dp">
                         <ImageView
                             android:id="@+id/ivDeal1"
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="110dp"
                             android:src="@android:drawable/ic_menu_gallery"/>
                         <TextView
                             android:id="@+id/tvNameDeal1"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minLines="2"
+                            android:maxLines="2"
+                            android:ellipsize="end"
                             android:text="Завантаження..."
                             android:textColor="#333333"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp"/>
-                        <TextView
-                            android:id="@+id/tvOldPriceDeal1"
-                            android:layout_width="match_parent"
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="..."
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
-                        <TextView
-                            android:id="@+id/tvNewPriceDeal1"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <RatingBar
+                                android:id="@+id/rbRatingDeal1"
+                                style="?android:attr/ratingBarStyleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:numStars="5"
+                                android:stepSize="0.1"
+                                android:progressTint="#FFD700"
+                                android:isIndicator="true"/>
+                            <TextView
+                                android:id="@+id/tvRatingValueDeal1"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:layout_marginStart="4dp"
+                                android:text="0.0"/>
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="..."
-                            android:textColor="#FF0000"
-                            android:textStyle="bold"
-                            android:textSize="16sp"/>
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="bottom">
+                            <TextView
+                                android:id="@+id/tvOldPriceDeal1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="..."
+                                android:textSize="12sp"/>
+                            <TextView
+                                android:id="@+id/tvNewPriceDeal1"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="..."
+                                android:textColor="#FF0000"
+                                android:textStyle="bold"
+                                android:textSize="16sp"/>
+                        </LinearLayout>
                         <Button
                             android:id="@+id/btnBuyDeal1"
                             android:layout_width="match_parent"
@@ -145,44 +175,77 @@
 
                 <androidx.cardview.widget.CardView
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="340dp"
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     app:cardCornerRadius="16dp"
                     app:cardBackgroundColor="#FFFFFF">
                     <LinearLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:orientation="vertical"
                         android:padding="12dp">
                         <ImageView
                             android:id="@+id/ivDeal2"
                             android:layout_width="match_parent"
-                            android:layout_height="120dp"
+                            android:layout_height="110dp"
                             android:src="@android:drawable/ic_menu_gallery"/>
                         <TextView
                             android:id="@+id/tvNameDeal2"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minLines="2"
+                            android:maxLines="2"
+                            android:ellipsize="end"
                             android:text="Завантаження..."
                             android:textColor="#333333"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp"/>
-                        <TextView
-                            android:id="@+id/tvOldPriceDeal2"
-                            android:layout_width="match_parent"
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="..."
-                            android:textSize="12sp"
-                            android:layout_marginTop="4dp"/>
-                        <TextView
-                            android:id="@+id/tvNewPriceDeal2"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+                            <RatingBar
+                                android:id="@+id/rbRatingDeal2"
+                                style="?android:attr/ratingBarStyleSmall"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:numStars="5"
+                                android:stepSize="0.1"
+                                android:progressTint="#FFD700"
+                                android:isIndicator="true"/>
+                            <TextView
+                                android:id="@+id/tvRatingValueDeal2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textSize="12sp"
+                                android:layout_marginStart="4dp"
+                                android:text="0.0"/>
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:text="..."
-                            android:textColor="#FF0000"
-                            android:textStyle="bold"
-                            android:textSize="16sp"/>
+                            android:layout_height="0dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical"
+                            android:gravity="bottom">
+                            <TextView
+                                android:id="@+id/tvOldPriceDeal2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="..."
+                                android:textSize="12sp"/>
+                            <TextView
+                                android:id="@+id/tvNewPriceDeal2"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="..."
+                                android:textColor="#FF0000"
+                                android:textStyle="bold"
+                                android:textSize="16sp"/>
+                        </LinearLayout>
                         <Button
                             android:id="@+id/btnBuyDeal2"
                             android:layout_width="match_parent"
@@ -203,5 +266,4 @@
         android:layout_alignParentBottom="true"
         android:background="#FFFFFF"
         app:menu="@menu/bottom_nav_menu" />
-
 </RelativeLayout>

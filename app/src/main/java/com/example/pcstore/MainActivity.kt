@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -128,7 +129,6 @@ class MainActivity : AppCompatActivity() {
                         discount1 = DealManager.currentDeals[dealIds[0]] ?: 0
                         discount2 = DealManager.currentDeals[dealIds[1]] ?: 0
                     } else {
-                        // Якщо сталася помилка (наприклад, товар видалили з БД), генеруємо нові
                         allProducts.shuffle()
                         deal1 = allProducts[0]
                         deal2 = allProducts[1]
@@ -141,7 +141,6 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
-                // Відображаємо товари на екрані (нові або старі - залежить від перевірки вище)
                 setupDealCard(
                     deal1, discount1,
                     findViewById(R.id.tvNameDeal1),
@@ -175,8 +174,14 @@ class MainActivity : AppCompatActivity() {
         btnBuy: Button
     ) {
         val name = doc.getString("name") ?: "Товар"
-        val oldPrice = doc.get("price")?.toString()?.toLong() ?: 0L
+        val oldPrice = doc.getLong("price") ?: 0L // Використовуємо getLong для безпеки
         val imageUrl = doc.getString("imageUrl") ?: ""
+        val rating = doc.getDouble("rating") ?: 0.0
+
+        val rb = if (tvName.id == R.id.tvNameDeal1) findViewById<RatingBar>(R.id.rbRatingDeal1)
+        else findViewById<RatingBar>(R.id.rbRatingDeal2)
+        val tvR = if (tvName.id == R.id.tvNameDeal1) findViewById<TextView>(R.id.tvRatingValueDeal1)
+        else findViewById<TextView>(R.id.tvRatingValueDeal2)
 
         val newPrice = oldPrice - (oldPrice * discountPercent / 100)
 
@@ -185,13 +190,11 @@ class MainActivity : AppCompatActivity() {
         tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         tvNewPrice.text = "$newPrice ₴ (-$discountPercent%)"
 
+        rb?.rating = rating.toFloat()
+        tvR?.text = rating.toString()
+
         if (imageUrl.isNotEmpty()) {
-            Glide.with(this)
-                .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery)
-                .error(android.R.drawable.ic_dialog_alert)
-                .centerCrop()
-                .into(ivCardImage)
+            Glide.with(this).load(imageUrl).centerCrop().into(ivCardImage)
         }
 
         ivCardImage.setOnClickListener {
