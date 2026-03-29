@@ -1,6 +1,7 @@
 package com.example.pcstore
 
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,7 @@ import com.google.android.material.card.MaterialCardView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
-class ProductAdapter(private val productList: List<Product>) :
+class ProductAdapter(private var productList: List<Product>) :
     RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
     class ProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -37,15 +38,33 @@ class ProductAdapter(private val productList: List<Product>) :
         val product = productList[position]
 
         holder.tvProductName.text = product.name
-        holder.tvPrice.text = "${product.price} ₴"
         holder.rbRating.rating = product.rating
 
-        if (product.oldPrice != null) {
+        val discountPercent = DealManager.getDiscount(product.id)
+
+        val originalPrice = product.price.toString().toLong()
+        var finalPrice: Long = originalPrice
+
+        if (discountPercent != null) {
+            finalPrice = originalPrice - (originalPrice * discountPercent / 100)
+
+            holder.tvPrice.text = "$finalPrice ₴ (-$discountPercent%)"
+            holder.tvPrice.setTextColor(Color.RED)
+
             holder.tvOldPrice.visibility = View.VISIBLE
-            holder.tvOldPrice.text = "${product.oldPrice} ₴"
+            holder.tvOldPrice.text = "$originalPrice ₴"
             holder.tvOldPrice.paintFlags = holder.tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
-            holder.tvOldPrice.visibility = View.GONE
+            holder.tvPrice.text = "$originalPrice ₴"
+            holder.tvPrice.setTextColor(Color.BLACK)
+
+            if (product.oldPrice != null) {
+                holder.tvOldPrice.visibility = View.VISIBLE
+                holder.tvOldPrice.text = "${product.oldPrice} ₴"
+                holder.tvOldPrice.paintFlags = holder.tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                holder.tvOldPrice.visibility = View.GONE
+            }
         }
 
         if (product.imageUrl.isNotEmpty()) {
@@ -65,12 +84,12 @@ class ProductAdapter(private val productList: List<Product>) :
             val auth = FirebaseAuth.getInstance()
             val db = FirebaseFirestore.getInstance()
             val uid = auth.currentUser?.uid
-            val context = holder.itemView.context // Контекст для Toast
+            val context = holder.itemView.context
 
             if (uid != null) {
                 val cartItem = hashMapOf(
                     "name" to product.name,
-                    "price" to product.price
+                    "price" to finalPrice // Додаємо акційну ціну, якщо є знижка!
                 )
 
                 db.collection("users").document(uid).collection("cart")
@@ -89,5 +108,14 @@ class ProductAdapter(private val productList: List<Product>) :
 
     override fun getItemCount(): Int {
         return productList.size
+    }
+
+    fun updateList(newList: List<Product>) {
+        productList = newList
+        notifyDataSetChanged()
+    }
+
+    fun getCurrentList(): List<Product> {
+        return productList
     }
 }

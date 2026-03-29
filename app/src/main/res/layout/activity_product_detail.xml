@@ -5,18 +5,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#E5E5EA"> <FrameLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp">
+    android:background="#E5E5EA">
 
-    <ImageView
-        android:id="@+id/ivBack"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:src="@drawable/ic_back"
-        app:tint="@color/black" />
-</FrameLayout>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:src="@drawable/ic_back"
+            app:tint="@color/black" />
+    </FrameLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -44,14 +46,31 @@
                 android:textColor="#000000"
                 android:layout_marginBottom="8dp" />
 
-            <TextView
-                android:id="@+id/tvProductPrice"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="22sp"
-                android:textStyle="bold"
-                android:textColor="#000000"
-                android:layout_marginBottom="16dp" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp"
+                android:gravity="bottom">
+
+                <TextView
+                    android:id="@+id/tvProductPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textStyle="bold"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/tvOldPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="#888888"
+                    android:layout_marginStart="12dp"
+                    android:layout_marginBottom="2dp"
+                    android:visibility="gone" />
+            </LinearLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnAddToCart"

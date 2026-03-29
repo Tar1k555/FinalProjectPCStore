@@ -3,6 +3,8 @@ package com.example.pcstore
 import android.content.Intent
 import android.graphics.Paint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -20,6 +22,18 @@ class MainActivity : AppCompatActivity() {
     private val db = FirebaseFirestore.getInstance()
     private val auth = FirebaseAuth.getInstance()
 
+    private val handler = Handler(Looper.getMainLooper())
+
+    // Час оновлення акцій: 60 000 мс = 1 хвилина.
+    private val updateInterval = 60000L
+
+    private val updateDealsRunnable = object : Runnable {
+        override fun run() {
+            loadRandomDeals()
+            handler.postDelayed(this, updateInterval)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -34,9 +48,6 @@ class MainActivity : AppCompatActivity() {
         ivThemeToggle.setOnClickListener {
             Toast.makeText(this, "Перемикач теми буде тут!", Toast.LENGTH_SHORT).show()
         }
-
-        // Завантажуємо рандомні акції!
-        loadRandomDeals()
 
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
@@ -66,6 +77,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        handler.removeCallbacks(updateDealsRunnable)
+        handler.post(updateDealsRunnable)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(updateDealsRunnable)
+    }
+
     private fun loadRandomDeals() {
         db.collection("products").get().addOnSuccessListener { result ->
             val allProducts = result.documents.toMutableList()
@@ -75,60 +97,59 @@ class MainActivity : AppCompatActivity() {
                 val deal1 = allProducts[0]
                 val deal2 = allProducts[1]
 
+                DealManager.currentDeals.clear()
+                val discount1 = Random.nextInt(5, 16)
+                val discount2 = Random.nextInt(5, 16)
+                DealManager.currentDeals[deal1.id] = discount1
+                DealManager.currentDeals[deal2.id] = discount2
+
                 setupDealCard(
-                    deal1,
+                    deal1, discount1,
                     findViewById(R.id.tvNameDeal1),
                     findViewById(R.id.tvOldPriceDeal1),
                     findViewById(R.id.tvNewPriceDeal1),
+                    findViewById(R.id.ivDeal1),
                     findViewById(R.id.btnBuyDeal1)
                 )
 
                 setupDealCard(
-                    deal2,
+                    deal2, discount2,
                     findViewById(R.id.tvNameDeal2),
                     findViewById(R.id.tvOldPriceDeal2),
                     findViewById(R.id.tvNewPriceDeal2),
+                    findViewById(R.id.ivDeal2),
                     findViewById(R.id.btnBuyDeal2)
                 )
             } else {
-                Toast.makeText(this, "Недостатньо товарів для акцій", Toast.LENGTH_SHORT).show()
             }
         }.addOnFailureListener {
             Toast.makeText(this, "Помилка завантаження акцій", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun setupDealCard(doc: DocumentSnapshot, tvName: TextView, tvOldPrice: TextView, tvNewPrice: TextView, btnBuy: Button) {
+    private fun setupDealCard(
+        doc: DocumentSnapshot,
+        discountPercent: Int,
+        tvName: TextView,
+        tvOldPrice: TextView,
+        tvNewPrice: TextView,
+        ivCardImage: ImageView,
+        btnBuy: Button
+    ) {
         val name = doc.getString("name") ?: "Товар"
-        val oldPrice = doc.getLong("price") ?: 0L
 
-        // 🖼️ Отримуємо посилання на картинку з бази (поле "imageUrl")
+        val oldPrice = doc.get("price")?.toString()?.toLong() ?: 0L
         val imageUrl = doc.getString("imageUrl") ?: ""
 
-        // Генеруємо рандомну знижку від 5 до 15 відсотків
-        val discountPercent = Random.nextInt(5, 16)
-
-        // Рахуємо нову ціну
         val newPrice = oldPrice - (oldPrice * discountPercent / 100)
 
-        // Виводимо текст на екран
         tvName.text = name
         tvOldPrice.text = "$oldPrice ₴"
-        tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG // Перекреслена ціна
+        tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
         tvNewPrice.text = "$newPrice ₴ (-$discountPercent%)"
 
-        val ivCardImage = if (tvName.id == R.id.tvNameDeal1) findViewById<ImageView>(R.id.ivDeal1) else findViewById<ImageView>(R.id.ivDeal2)
-
-        if (imageUrl.isNotEmpty() && ivCardImage != null) {
-            Glide.with(this)
-                .load(imageUrl)
-                .placeholder(android.R.drawable.ic_menu_gallery) // Показуємо це, поки фото вантажиться
-                .error(android.R.drawable.ic_dialog_alert) // Показуємо це, якщо посилання зламане
-                .centerCrop()
-                .into(ivCardImage)
-        }
-        if (imageUrl.isNotEmpty() && ivCardImage != null) {
+        if (imageUrl.isNotEmpty()) {
             Glide.with(this)
                 .load(imageUrl)
                 .placeholder(android.R.drawable.ic_menu_gallery)
@@ -137,11 +158,12 @@ class MainActivity : AppCompatActivity() {
                 .into(ivCardImage)
         }
 
-        ivCardImage?.setOnClickListener {
+        ivCardImage.setOnClickListener {
             val intent = Intent(this, ProductDetailActivity::class.java)
-            intent.putExtra("PRODUCT_ID", doc.id) // Передаємо унікальний ID Firebase
+            intent.putExtra("PRODUCT_ID", doc.id)
             startActivity(intent)
         }
+
         btnBuy.setOnClickListener {
             addToCart(name, newPrice)
         }
@@ -163,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         db.collection("users").document(uid).collection("cart")
             .add(cartItem)
             .addOnSuccessListener {
-                Toast.makeText(this, "🎉 $name додано в кошик по акції!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, " $name додано в кошик по акції!", Toast.LENGTH_SHORT).show()
             }
             .addOnFailureListener {
                 Toast.makeText(this, "Помилка додавання", Toast.LENGTH_SHORT).show()

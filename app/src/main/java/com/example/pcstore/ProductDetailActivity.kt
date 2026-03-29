@@ -1,5 +1,9 @@
 package com.example.pcstore
+
+import android.graphics.Color
+import android.graphics.Paint
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,7 +19,7 @@ class ProductDetailActivity : AppCompatActivity() {
     private val auth = FirebaseAuth.getInstance()
 
     private var productName = ""
-    private var productPrice = 0L
+    private var productPrice = 0L // Сюди запишеться або звичайна, або акційна ціна
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +29,7 @@ class ProductDetailActivity : AppCompatActivity() {
         val ivImage = findViewById<ImageView>(R.id.ivProductImage)
         val tvName = findViewById<TextView>(R.id.tvProductName)
         val tvPrice = findViewById<TextView>(R.id.tvProductPrice)
+        val tvOldPrice = findViewById<TextView>(R.id.tvOldPrice) // Наше нове поле
         val tvDescription = findViewById<TextView>(R.id.tvProductDescription)
         val tvSpecs = findViewById<TextView>(R.id.tvProductSpecs)
         val btnAddCart = findViewById<Button>(R.id.btnAddToCart)
@@ -34,7 +39,7 @@ class ProductDetailActivity : AppCompatActivity() {
         val productId = intent.getStringExtra("PRODUCT_ID")
 
         if (productId != null) {
-            loadProductDetails(productId, ivImage, tvName, tvPrice, tvDescription, tvSpecs)
+            loadProductDetails(productId, ivImage, tvName, tvPrice, tvOldPrice, tvDescription, tvSpecs)
         } else {
             Toast.makeText(this, "Помилка: Товар не знайдено", Toast.LENGTH_SHORT).show()
             finish()
@@ -47,22 +52,50 @@ class ProductDetailActivity : AppCompatActivity() {
 
     private fun loadProductDetails(
         id: String, ivImage: ImageView, tvName: TextView,
-        tvPrice: TextView, tvDesc: TextView, tvSpecs: TextView
+        tvPrice: TextView, tvOldPrice: TextView, tvDesc: TextView, tvSpecs: TextView
     ) {
         db.collection("products").document(id).get()
             .addOnSuccessListener { doc ->
                 if (doc.exists()) {
                     productName = doc.getString("name") ?: "Невідомий товар"
-                    productPrice = doc.getLong("price") ?: 0L
+                    val basePrice = doc.getLong("price") ?: 0L
+                    val dbOldPrice = doc.getLong("oldPrice")
 
                     val imageUrl = doc.getString("imageUrl") ?: ""
                     val description = doc.getString("description") ?: "Опис відсутній."
                     val specs = doc.getString("specs") ?: "Характеристики відсутні."
 
                     tvName.text = productName
-                    tvPrice.text = "$productPrice ₴"
                     tvDesc.text = description
                     tvSpecs.text = specs
+
+                    // 🔴 ПЕРЕВІРЯЄМО РАНДОМНУ ЗНИЖКУ 🔴
+                    val discountPercent = DealManager.getDiscount(id)
+
+                    if (discountPercent != null) {
+                        // Товар в акції!
+                        productPrice = DealManager.calculateNewPrice(basePrice, discountPercent)
+                        tvPrice.text = "$productPrice ₴ (-$discountPercent%)"
+                        tvPrice.setTextColor(Color.RED)
+
+                        tvOldPrice.visibility = View.VISIBLE
+                        tvOldPrice.text = "$basePrice ₴"
+                        tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                    } else {
+                        // Звичайна ціна
+                        productPrice = basePrice
+                        tvPrice.text = "$productPrice ₴"
+                        tvPrice.setTextColor(Color.BLACK)
+
+                        // Якщо є стара ціна в базі (стаціонарна знижка)
+                        if (dbOldPrice != null) {
+                            tvOldPrice.visibility = View.VISIBLE
+                            tvOldPrice.text = "$dbOldPrice ₴"
+                            tvOldPrice.paintFlags = tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                        } else {
+                            tvOldPrice.visibility = View.GONE
+                        }
+                    }
 
                     // Завантажуємо фото
                     if (imageUrl.isNotEmpty()) {
@@ -84,7 +117,7 @@ class ProductDetailActivity : AppCompatActivity() {
 
         val cartItem = hashMapOf(
             "name" to name,
-            "price" to price,
+            "price" to price, // Тут вже лежить правильна ціна (звичайна або зі знижкою)
             "timestamp" to System.currentTimeMillis()
         )
 
