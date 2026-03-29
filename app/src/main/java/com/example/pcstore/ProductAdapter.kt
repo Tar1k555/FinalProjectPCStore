@@ -1,5 +1,6 @@
 package com.example.pcstore
 
+import android.content.Intent
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
@@ -51,6 +52,13 @@ class ProductAdapter(private val productList: List<Product>) :
             Glide.with(holder.itemView.context)
                 .load(product.imageUrl)
                 .into(holder.ivProduct)
+        }
+
+        holder.itemView.setOnClickListener {
+            val context = holder.itemView.context
+            val intent = Intent(context, ProductDetailActivity::class.java)
+            intent.putExtra("PRODUCT_ID", product.id)
+            context.startActivity(intent)
         }
 
         holder.btnAddToCart.setOnClickListener {

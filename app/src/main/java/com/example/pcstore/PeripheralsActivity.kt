@@ -73,6 +73,7 @@ class PeripheralsActivity : AppCompatActivity() {
                 productList.clear()
                 for (document in documents) {
                     val product = document.toObject(Product::class.java)
+                    product.id = document.id
                     productList.add(product)
                 }
                 adapter.notifyDataSetChanged() // Оновлюємо екран

@@ -128,7 +128,20 @@ class MainActivity : AppCompatActivity() {
                 .centerCrop()
                 .into(ivCardImage)
         }
+        if (imageUrl.isNotEmpty() && ivCardImage != null) {
+            Glide.with(this)
+                .load(imageUrl)
+                .placeholder(android.R.drawable.ic_menu_gallery)
+                .error(android.R.drawable.ic_dialog_alert)
+                .centerCrop()
+                .into(ivCardImage)
+        }
 
+        ivCardImage?.setOnClickListener {
+            val intent = Intent(this, ProductDetailActivity::class.java)
+            intent.putExtra("PRODUCT_ID", doc.id) // Передаємо унікальний ID Firebase
+            startActivity(intent)
+        }
         btnBuy.setOnClickListener {
             addToCart(name, newPrice)
         }
