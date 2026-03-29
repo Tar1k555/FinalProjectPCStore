@@ -39,6 +39,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val sharedPrefs = getSharedPreferences("ThemePrefs", MODE_PRIVATE)
+        val isDarkTheme = sharedPrefs.getBoolean("isDark", false)
+
+        if (isDarkTheme) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
+        } else {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO)
+        }
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
@@ -46,11 +55,31 @@ class MainActivity : AppCompatActivity() {
         val ivThemeToggle = findViewById<ImageView>(R.id.ivThemeToggle)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
+        // --- Встановлюємо правильну іконку при старті ---
+        if (isDarkTheme) {
+            ivThemeToggle.setImageResource(R.drawable.ic_sun)
+        } else {
+            ivThemeToggle.setImageResource(R.drawable.ic_moon)
+        }
+
         ivCart.setOnClickListener {
             startActivity(Intent(this, CartActivity::class.java))
         }
+
+        // --- Логіка зміни теми ТА ІКОНКИ ---
         ivThemeToggle.setOnClickListener {
-            Toast.makeText(this, "Перемикач теми буде тут!", Toast.LENGTH_SHORT).show()
+            val currentNightMode = sharedPrefs.getBoolean("isDark", false)
+            val newNightMode = !currentNightMode
+
+            sharedPrefs.edit().putBoolean("isDark", newNightMode).apply()
+
+            if (newNightMode) {
+                ivThemeToggle.setImageResource(R.drawable.ic_sun) // Змінюємо на сонце
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                ivThemeToggle.setImageResource(R.drawable.ic_moon) // Змінюємо на місяць
+                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO)
+            }
         }
 
         bottomNav.setOnItemSelectedListener { item ->

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="300dp"
     android:layout_margin="4dp"
-    app:cardBackgroundColor="@android:color/white"
+    app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="8dp"
     app:cardElevation="2dp"
     app:strokeWidth="0dp">
@@ -41,7 +41,7 @@
             android:ellipsize="end"
             android:minLines="2"
             android:maxLines="2"
-            android:textColor="@android:color/black"
+            android:textColor="@color/text_primary"
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -74,7 +74,7 @@
                 android:id="@+id/tvOldPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#9E9E9E"
+                android:textColor="@color/text_secondary"
                 android:textSize="10sp"
                 android:visibility="gone"
                 tools:text="16 500 ₴"
@@ -84,8 +84,7 @@
                 android:id="@+id/tvPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@android:color/black"
-                android:textSize="14sp"
+                android:textColor="#FF0000" android:textSize="14sp"
                 android:textStyle="bold"
                 tools:text="14 499 ₴" />
         </LinearLayout>

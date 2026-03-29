@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#EAEAEA">
+    android:background="@color/app_background">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -28,26 +28,30 @@
                     android:text="PC Store"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="#000000"/>
+                    android:textColor="@color/text_primary"/>
                 <ImageView
                     android:id="@+id/ivCart"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
                     android:src="@drawable/ic_cart"
+                    app:tint="@color/text_primary"
                     android:layout_marginEnd="16dp"/>
                 <ImageView
                     android:id="@+id/ivThemeToggle"
                     android:layout_width="32dp"
                     android:layout_height="32dp"
-                    android:src="@drawable/ic_theme_change"/>
+                    app:tint="@color/text_primary"
+                    android:src="@drawable/ic_moon"/>
             </LinearLayout>
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:layout_marginTop="16dp"
-                android:background="#D1D1D1"
+                android:background="@color/search_bg"
                 android:hint="Search"
+                android:textColorHint="@color/text_secondary"
+                android:textColor="@color/text_primary"
                 android:paddingStart="16dp"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="8dp"
@@ -79,7 +83,7 @@
                 android:text="🔥 Акції дня!"
                 android:textSize="22sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:gravity="center"
                 android:layout_marginTop="16dp"
                 android:layout_marginBottom="16dp"/>
@@ -96,7 +100,7 @@
                     android:layout_weight="1"
                     android:layout_marginEnd="8dp"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/card_background">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -118,8 +122,7 @@
                             android:layout_alignParentEnd="true"
                             android:src="@drawable/ic_heart_empty"
                             android:padding="4dp"
-                            android:elevation="4dp"
-                            android:contentDescription="Favorite" />
+                            android:elevation="4dp"/>
 
                         <TextView
                             android:id="@+id/tvNameDeal1"
@@ -130,7 +133,7 @@
                             android:maxLines="2"
                             android:ellipsize="end"
                             android:text="Завантаження..."
-                            android:textColor="#333333"
+                            android:textColor="@color/text_primary"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp"/>
 
@@ -155,6 +158,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
+                                android:textColor="@color/text_primary"
                                 android:layout_marginStart="4dp"
                                 android:text="0.0"/>
                         </LinearLayout>
@@ -169,6 +173,7 @@
                                 android:id="@+id/tvOldPriceDeal1"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/text_primary"
                                 android:text="..."
                                 android:textSize="12sp"/>
                             <TextView
@@ -198,7 +203,7 @@
                     android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     app:cardCornerRadius="16dp"
-                    app:cardBackgroundColor="#FFFFFF">
+                    app:cardBackgroundColor="@color/card_background">
 
                     <RelativeLayout
                         android:layout_width="match_parent"
@@ -220,8 +225,7 @@
                             android:layout_alignParentEnd="true"
                             android:src="@drawable/ic_heart_empty"
                             android:padding="4dp"
-                            android:elevation="4dp"
-                            android:contentDescription="Favorite" />
+                            android:elevation="4dp"/>
 
                         <TextView
                             android:id="@+id/tvNameDeal2"
@@ -232,7 +236,7 @@
                             android:maxLines="2"
                             android:ellipsize="end"
                             android:text="Завантаження..."
-                            android:textColor="#333333"
+                            android:textColor="@color/text_primary"
                             android:textStyle="bold"
                             android:layout_marginTop="8dp"/>
 
@@ -257,6 +261,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:textSize="12sp"
+                                android:textColor="@color/text_primary"
                                 android:layout_marginStart="4dp"
                                 android:text="0.0"/>
                         </LinearLayout>
@@ -271,6 +276,7 @@
                                 android:id="@+id/tvOldPriceDeal2"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
+                                android:textColor="@color/text_primary"
                                 android:text="..."
                                 android:textSize="12sp"/>
                             <TextView
@@ -302,6 +308,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="#FFFFFF"
+        android:background="@color/bottom_nav_bg"
+        app:itemTextColor="@color/text_primary"
+        app:itemIconTint="@color/text_primary"
         app:menu="@menu/bottom_nav_menu" />
 </RelativeLayout>

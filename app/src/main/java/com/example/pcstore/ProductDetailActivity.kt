@@ -10,6 +10,7 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -81,7 +82,7 @@ class ProductDetailActivity : AppCompatActivity() {
                     val rating = doc.getDouble("rating") ?: 0.0
 
                     val category = doc.getString("category")
-                    val subCategory = doc.getString("subCategory") // Нове поле
+                    val subCategory = doc.getString("subCategory")
                     val displayId = doc.get("id")?.toString() ?: "0"
 
                     val imageUrl = doc.getString("imageUrl") ?: ""
@@ -98,10 +99,9 @@ class ProductDetailActivity : AppCompatActivity() {
                     val discountPercent = DealManager.getDiscount(id)
 
                     if (discountPercent != null) {
-                        // Переконайся, що DealManager приймає Long
                         productPrice = DealManager.calculateNewPrice(basePrice, discountPercent)
                         tvPrice.text = "$productPrice ₴ (-$discountPercent%)"
-                        tvPrice.setTextColor(Color.RED)
+                        tvPrice.setTextColor(Color.RED) // 🔴 Акційна ціна залишається червоною
 
                         tvOldPrice.visibility = View.VISIBLE
                         tvOldPrice.text = "$basePrice ₴"
@@ -109,7 +109,9 @@ class ProductDetailActivity : AppCompatActivity() {
                     } else {
                         productPrice = basePrice
                         tvPrice.text = "$productPrice ₴"
-                        tvPrice.setTextColor(Color.BLACK)
+
+                        // ⚪ ВИПРАВЛЕНО: Тепер звичайна ціна використовує адаптивний колір text_primary
+                        tvPrice.setTextColor(ContextCompat.getColor(this@ProductDetailActivity, R.color.text_primary))
 
                         if (dbOldPrice != null) {
                             tvOldPrice.visibility = View.VISIBLE

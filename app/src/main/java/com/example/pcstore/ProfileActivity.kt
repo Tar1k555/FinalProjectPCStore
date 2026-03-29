@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -54,9 +55,9 @@ class ProfileActivity : AppCompatActivity() {
         val uid = currentUser.uid
         val currentUserEmail = currentUser.email ?: "unknown_user"
 
-        // Ініціалізація UI
         val ivBack = findViewById<ImageView>(R.id.ivBack)
         val ivCartProfile = findViewById<ImageView>(R.id.ivCartProfile)
+        val ivThemeProfile = findViewById<ImageView>(R.id.ivThemeProfile) // Твоя кнопка теми
 
         val etLastName = findViewById<EditText>(R.id.etLastName)
         val etFirstName = findViewById<EditText>(R.id.etFirstName)
@@ -73,7 +74,30 @@ class ProfileActivity : AppCompatActivity() {
         val btnOrderHistory = findViewById<Button>(R.id.btnOrderHistory)
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
 
-        // Налаштування RecyclerView
+        val sharedPrefs = getSharedPreferences("ThemePrefs", MODE_PRIVATE)
+        val isDarkTheme = sharedPrefs.getBoolean("isDark", false)
+
+        if (isDarkTheme) {
+            ivThemeProfile.setImageResource(R.drawable.ic_sun)
+        } else {
+            ivThemeProfile.setImageResource(R.drawable.ic_moon)
+        }
+
+        ivThemeProfile.setOnClickListener {
+            val currentDark = sharedPrefs.getBoolean("isDark", false)
+            val newDark = !currentDark
+
+            sharedPrefs.edit().putBoolean("isDark", newDark).apply()
+
+            if (newDark) {
+                ivThemeProfile.setImageResource(R.drawable.ic_sun)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+            } else {
+                ivThemeProfile.setImageResource(R.drawable.ic_moon)
+                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+            }
+        }
+
         rvOrders = findViewById(R.id.rvOrders)
         rvOrders.layoutManager = LinearLayoutManager(this)
         orderAdapter = OrderAdapter(emptyList())
@@ -81,7 +105,6 @@ class ProfileActivity : AppCompatActivity() {
 
         etProfileEmail.setText(currentUserEmail)
 
-        // Завантаження даних профілю
         db.collection("users").document(uid).get().addOnSuccessListener { document ->
             if (document != null && document.exists()) {
                 etLastName.setText(document.getString("lastName") ?: "")
@@ -93,7 +116,6 @@ class ProfileActivity : AppCompatActivity() {
             }
         }
 
-        // Обробники кліків для профілю
         tvDob.setOnClickListener {
             val calendar = Calendar.getInstance()
             DatePickerDialog(this, { _, year, month, day ->
@@ -132,7 +154,6 @@ class ProfileActivity : AppCompatActivity() {
             finish()
         }
 
-        // --- ВИПРАВЛЕНА НАВІГАЦІЯ ---
         ivBack.setOnClickListener { finish() }
 
         ivCartProfile.setOnClickListener {
@@ -162,12 +183,11 @@ class ProfileActivity : AppCompatActivity() {
                     finish()
                     true
                 }
-                R.id.nav_profile -> true // Залишаємось тут
+                R.id.nav_profile -> true
                 else -> false
             }
         }
 
-        // Перемикання списків (Замовлення / Обране)
         btnMyOrders.setOnClickListener {
             rvOrders.adapter = orderAdapter
             loadOrders("active")
@@ -186,7 +206,7 @@ class ProfileActivity : AppCompatActivity() {
     private fun loadFavorites() {
         val uid = auth.currentUser?.uid ?: return
         favoriteAdapter = ProductAdapter(favoriteProducts)
-        rvOrders.adapter = favoriteAdapter // Змінюємо адаптер на ProductAdapter
+        rvOrders.adapter = favoriteAdapter
 
         db.collection("users").document(uid).collection("wishlist").get()
             .addOnSuccessListener { documents ->

@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat // Додано новий імпорт!
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
@@ -26,7 +27,7 @@ class ProductAdapter(private var productList: List<Product>) :
         val tvPrice: TextView = itemView.findViewById(R.id.tvPrice)
         val tvOldPrice: TextView = itemView.findViewById(R.id.tvOldPrice)
         val btnAddToCart: MaterialCardView = itemView.findViewById(R.id.btnAddToCart)
-        val ivFavorite: ImageView = itemView.findViewById(R.id.ivFavorite) // Сердечко в item_product.xml
+        val ivFavorite: ImageView = itemView.findViewById(R.id.ivFavorite)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
@@ -51,13 +52,16 @@ class ProductAdapter(private var productList: List<Product>) :
         if (discountPercent != null) {
             finalPrice = originalPrice - (originalPrice * discountPercent / 100)
             holder.tvPrice.text = "$finalPrice ₴ (-$discountPercent%)"
-            holder.tvPrice.setTextColor(Color.RED)
+            holder.tvPrice.setTextColor(Color.RED) // Залишаємо червоний для акцій
+
             holder.tvOldPrice.visibility = View.VISIBLE
             holder.tvOldPrice.text = "$originalPrice ₴"
             holder.tvOldPrice.paintFlags = holder.tvOldPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
         } else {
             holder.tvPrice.text = "$originalPrice ₴"
-            holder.tvPrice.setTextColor(Color.BLACK)
+            // ВИПРАВЛЕНО ТУТ: Беремо колір text_primary, який адаптується до світлої/темної теми
+            holder.tvPrice.setTextColor(ContextCompat.getColor(holder.itemView.context, R.color.text_primary))
+
             if (product.oldPrice != null) {
                 holder.tvOldPrice.visibility = View.VISIBLE
                 holder.tvOldPrice.text = "${product.oldPrice} ₴"

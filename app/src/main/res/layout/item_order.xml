@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="12dp"
+    app:cardBackgroundColor="@color/card_background"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp">
 
@@ -24,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Замовлення #1234"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
@@ -33,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="28.03.2026 18:49"
-                android:textColor="#888888"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
         </LinearLayout>
 
@@ -43,7 +44,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="RTX 4090, Intel Core i9..."
-            android:textColor="#555555"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
         <LinearLayout
@@ -58,7 +59,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Сума: 50 000 ₴"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textStyle="bold"
                 android:textSize="14sp" />
 
@@ -67,6 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Комплектується "
+                android:textColor="@color/text_primary"
                 android:textStyle="bold"
                 android:textSize="14sp" />
         </LinearLayout>

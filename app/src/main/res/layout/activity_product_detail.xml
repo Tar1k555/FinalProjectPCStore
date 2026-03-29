@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F2F2F7">
+    android:background="@color/app_background">
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_width="28dp"
             android:layout_height="28dp"
             android:src="@drawable/ic_back"
-            app:tint="@color/black" />
+            app:tint="@color/text_primary" />
     </FrameLayout>
 
     <ScrollView
@@ -36,8 +36,8 @@
                 android:layout_height="wrap_content"
                 android:text="Завантаження..."
                 android:textSize="12sp"
-                android:textColor="#666666"
-                android:background="#E5E5EA"
+                android:textColor="@color/text_secondary"
+                android:background="@color/search_bg"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="6dp"
                 android:layout_marginBottom="16dp"/>
@@ -55,7 +55,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="24sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:layout_marginBottom="4dp" />
 
             <LinearLayout
@@ -71,7 +71,7 @@
                     android:layout_height="wrap_content"
                     android:text="ID: 0"
                     android:textSize="14sp"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginEnd="16dp"/>
 
                 <RatingBar
@@ -90,6 +90,7 @@
                     android:layout_height="wrap_content"
                     android:text="0.0"
                     android:textSize="14sp"
+                    android:textColor="@color/text_primary"
                     android:textStyle="bold"
                     android:layout_marginStart="4dp"/>
             </LinearLayout>
@@ -106,13 +107,13 @@
                     android:layout_height="wrap_content"
                     android:textSize="26sp"
                     android:textStyle="bold"
-                    android:textColor="#000000" />
+                    android:textColor="#FF0000" />
                 <TextView
                     android:id="@+id/tvOldPrice"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:textColor="#888888"
+                    android:textColor="@color/text_secondary"
                     android:layout_marginStart="12dp"
                     android:layout_marginBottom="2dp"
                     android:visibility="gone" />
@@ -135,8 +136,8 @@
                 android:text="Опис"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="#D1D1D6"
+                android:textColor="@color/text_primary"
+                android:background="@color/search_bg"
                 android:padding="10dp"
                 android:layout_marginBottom="8dp"/>
             <TextView
@@ -144,7 +145,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="#333333"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="20dp"
                 android:text="Опис відсутній"/>
 
@@ -154,8 +155,8 @@
                 android:text="Характеристики"
                 android:textSize="18sp"
                 android:textStyle="bold"
-                android:textColor="#000000"
-                android:background="#D1D1D6"
+                android:textColor="@color/text_primary"
+                android:background="@color/search_bg"
                 android:padding="10dp"
                 android:layout_marginBottom="8dp"/>
             <TextView
@@ -163,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
-                android:textColor="#333333"
+                android:textColor="@color/text_secondary"
                 android:layout_marginBottom="40dp"
                 android:text="Характеристики відсутні"/>
         </LinearLayout>
